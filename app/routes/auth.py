@@ -1,6 +1,6 @@
 from app.api.auth import  auth_router
-from app.api.order import order_router
-from app.api.prediction import prediction_router
+from app.api.client.order import order_router
+from app.api.client.prediction import prediction_router
 
 def get_auth_router():
     return auth_router

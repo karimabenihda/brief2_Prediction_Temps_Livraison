@@ -20,3 +20,4 @@ pydantic[email]
 email-validator
 requests
 xgboost
+openrouteservice

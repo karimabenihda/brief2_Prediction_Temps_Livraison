@@ -10,15 +10,12 @@ import joblib
 import pandas as pd 
 from dotenv import load_dotenv
 import os
-import requests
 
 
-OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
-lon=-9.503141
-lat=30.348553
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-model_path = os.path.join(BASE_DIR, "uploads", "delivery_model2.pkl")
+model_path = os.path.join(BASE_DIR, "../uploads", "delivery_model2.pkl")
 model = joblib.load(model_path)
 
 prediction_router = APIRouter()
@@ -39,9 +36,3 @@ def predict(prediction:DeliveryPredictionRequest,db: Session = Depends(get_db)
     return {"new_prediction":new_prediction.tolist()}
 
 
-@prediction_router.post('/get_weather')
-def get_weather():
-    url=f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPENWEATHER_API_KEY}&units=metric"
-    response=requests.get(url)
-    data=response.json()
-    return data

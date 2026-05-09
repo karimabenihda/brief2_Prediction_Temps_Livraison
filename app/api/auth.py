@@ -9,7 +9,7 @@ import os
 from app.core.database import get_db
 from dotenv import load_dotenv 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.models.Location import Location
+# from app.models.Location import DeliveryTracking,LocationTrack
 from pathlib import Path
 import smtplib
 from email.mime.text import MIMEText
@@ -23,7 +23,7 @@ load_dotenv(dotenv_path=dotenv_path)
 SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))
-CLIENT_ID=os.getenv("CLIENT_ID")
+
 EMAIL_USER=os.getenv("EMAIL_USER")
 PASS_USER= os.getenv("EMAIL_PASS")
 
@@ -136,7 +136,6 @@ def set_rights(db: Session = Depends(get_db), user=Depends(get_current_user)):
     db.commit()
     return {"message": "Rights enabled"}
    
-        
 
 
         
@@ -263,24 +262,3 @@ def get_me(db: Session = Depends(get_db), user=Depends(get_current_user)):
 def logout():
     return {"message": "Logged out"}
 
-
-@auth_router.post("/location")
-def add_location(
-    data: LocationRequest,
-    db: Session = Depends(get_db),
-    user=Depends(get_current_user)
-):
- 
-    location = Location(
-        user_id= user["user_id"],
-        latitude=data.lat,
-        longitude=data.lng,
-        type="home",
-        created_at=datetime.utcnow()
-    )
-
-    db.add(location)
-    db.commit()
-    db.refresh(location)
-
-    return location
