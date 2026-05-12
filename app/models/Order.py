@@ -41,7 +41,7 @@ class OrderItem(Base):
 
     # relations
     order = relationship("Order", back_populates="items")
-    meal = relationship("Meal", back_populates="items", cascade="all, delete")    
+    meals = relationship("Meal", back_populates="items", cascade="all, delete")    
     
     
 class MealType(Base):

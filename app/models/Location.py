@@ -3,8 +3,8 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.core.database import Base
 
-
-class LocationTrack(Base):
+#user location
+class LocationTrack(Base): 
     __tablename__ = "locations_track"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -22,6 +22,9 @@ class LocationTrack(Base):
     user = relationship("User", back_populates="locations")
     
     
+
+
+  #user and delivery  
 class DeliveryTracking(Base):
     __tablename__ = "delivery_tracking"
 

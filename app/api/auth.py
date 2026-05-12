@@ -1,5 +1,3 @@
-from app.schemas.User import UserInDB, Token, UserLogin,UserUpdate,UserOut,EmailRequest
-from app.models.User import User
 from passlib.context import CryptContext
 from fastapi import APIRouter, Depends, HTTPException,Request
 from sqlalchemy.orm import Session
@@ -14,6 +12,8 @@ from pathlib import Path
 import smtplib
 from email.mime.text import MIMEText
 from app.schemas.Location import LocationRequest
+from app.models.User import User ,Client, DeliveryPerson, Restaurant, Admin
+from app.schemas.User import UserInDB,BeDelivery,DeliveryRole ,Token, UserLogin,UserUpdate,UserOut,EmailRequest
 
 
 security = HTTPBearer()
@@ -186,6 +186,54 @@ def register(user: UserInDB, db: Session = Depends(get_db)):
     token=create_activation_token(new_user.email)
     send_activation_email(new_user.firstname,new_user.email,token)
     return {"message": "User created successfully", "user_id": new_user.id,"token":token}
+
+
+@auth_router.put("/be_delivery_person")
+def be_delivery_person(
+    data: BeDelivery,
+    id_user: int,
+    db: Session = Depends(get_db)
+):
+
+    # check user exists
+    client = db.query(User).filter(User.id == id_user).first()
+
+    if not client:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # check if already delivery person
+    existing_delivery = db.query(DeliveryPerson).filter(
+        DeliveryPerson.user_id == id_user
+    ).first()
+
+    if existing_delivery:
+        raise HTTPException(
+            status_code=400,
+            detail="Delivery person already exists"
+        )
+
+    # update role
+    client.role = "delivery_person"
+
+    # create delivery person
+    new_delivery_person = DeliveryPerson(
+        user_id=id_user,
+        vehicle_type=data.vehicle_type,
+        birth_date=data.birth_date,
+        available=data.available,
+    )
+
+    db.add(new_delivery_person)
+
+    db.commit()
+    db.refresh(new_delivery_person)
+
+    return {
+        "message": "User became delivery person successfully",
+        "delivery_person": new_delivery_person
+    }
+
+
 
 @auth_router.get("/activate")
 def activate_account(token: str, db: Session = Depends(get_db)):

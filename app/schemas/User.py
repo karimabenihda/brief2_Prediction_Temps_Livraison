@@ -14,6 +14,16 @@ class UserInDB(BaseModel):
 
     active:int
 
+class DeliveryRole(BaseModel):
+    role: str
+
+
+class BeDelivery(BaseModel):
+    vehicle_type:str
+    birth_date:datetime
+    available:int
+
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
